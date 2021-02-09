@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\CheckSession;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 
 class Main extends Controller
-{
+{   
+
     public function index(){
 
+        $check = new CheckSession();
+
         // verifica se o usuário está logado
-        if($this->checkSession()){
+        if($check->checkSession()){
             return redirect()->route('home');
         } else{
             return redirect()->route('login');
@@ -26,7 +30,9 @@ class Main extends Controller
 
     public function login(){
 
-        if($this->checkSession()){
+        $check = new CheckSession();
+
+        if($check->checkSession()){
             return redirect()->route('home');
         }
 
@@ -91,7 +97,7 @@ class Main extends Controller
     }
 
     // verifica se já existe um usuário na sessão
-    private function checkSession(){
+    /* private function checkSession(){
         return session()->has('user');
-    }
+    } */
 }
