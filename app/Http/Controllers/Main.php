@@ -3,13 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CheckSession;
+use App\Classes\Random;
+use App\Classes\Tools;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Log;
 
 class Main extends Controller
 {   
+
+    private $tools;
+
+    public function __construct(){
+
+        $this->tools = new Tools();
+
+    }
 
     public function index(){
 
@@ -49,11 +59,13 @@ class Main extends Controller
 
     public function loginSubmit(LoginRequest $request){
 
+        $check = new CheckSession();
+
         if(!$request->isMethod('post')){
             return redirect()->route('home');
         }
 
-        if($this->checkSession()){
+        if($check->checkSession()){
             return redirect()->route('home');
         }
 
@@ -74,12 +86,37 @@ class Main extends Controller
             return redirect()->route('login');
         } 
 
+        // Salva o token de login na session
         session()->put('user', $user->email);
+
+        // Salva os dados no log personalizado
+        Log::channel('main')->info('Login successful');
+
         return redirect()->route('home');
 
     }
 
+    // rota de exibição dos usuários
+    public function users(){
+
+        $data = [
+            "users" => User::all()
+        ];
+
+        return view('users', $data);
+
+    }
+
+    // Tela de edição de usuário que recebe o id cryptografado
+    public function edit($id){
+        $id = $this->tools->decrypt($id);
+
+        echo "Editar dados do usuário $id";
+    }
+
     public function logout(){
+
+        Log::channel('main')->info('Logout successful');
 
         session()->forget('user');
         return redirect()->route('index');

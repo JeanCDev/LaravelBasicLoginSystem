@@ -14,6 +14,9 @@ Route::get('/login', [Main::class, 'login'])->name('login');
 Route::post('/login-submit', [Main::class, 'loginSubmit'])->name('submit');
 Route::get('/logout', [Main::class, 'logout'])->name('logout');
 
+Route::get('/users', [Main::class, 'users'])->name('users');
+Route::get('/edit/{id}', [Main::class, 'edit'])->name('edit');
+
 // rota para enviar um email
 Route::get('/mail', function (){
 

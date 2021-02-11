@@ -16,5 +16,29 @@
       die();
 
     }
+    
+    public function crypt($value){
+
+      return bin2hex(openssl_encrypt(
+        $value, 'AES-128-CBC', 
+        's[vQWLwy/)\B[z,2kjPuhs@vVEB]^?5)',
+        OPENSSL_RAW_DATA, '9WXn/N?vR#[3P4q@'
+      ));
+
+    }
+
+    public function decrypt($value){
+
+      if(strlen($value) % 2 != 0){
+        return null;
+      }
+
+      return openssl_decrypt(
+        hex2bin($value), 'AES-128-CBC',
+        's[vQWLwy/)\B[z,2kjPuhs@vVEB]^?5)',
+        OPENSSL_RAW_DATA, '9WXn/N?vR#[3P4q@'
+      );
+
+    }
 
   }
