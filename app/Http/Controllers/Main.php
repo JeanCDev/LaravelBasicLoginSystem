@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 class Main extends Controller
 {   
 
@@ -121,6 +124,48 @@ class Main extends Controller
         session()->forget('user');
         return redirect()->route('index');
 
+    }
+
+    // Faz upload de arquivos
+    public function uploadPage(){
+
+        $check = new CheckSession();
+
+        if(!$check->checkSession()){
+            return redirect()->route('login');
+        }
+
+        return view('upload');
+
+    }
+
+    // Formulário deve ter enctype="multipart/form-data"
+    public function uploadSubmit(Request $request){
+
+        $check = new CheckSession();
+
+        if(!$check->checkSession()){
+            return redirect()->route('login');
+        }
+
+        // validação do upload
+        $validate = $request->validate([
+            "photo" => ['required', 'image']
+        ], [
+            'photo.required' => 'O arquivo é obrigatório',
+            'photo.image' => 'O arquivo deve ser uma imagem'
+        ]);
+
+        $request->file('photo')->storeAs('public/images', 'photo.jpg');
+        return redirect()->route('upload');
+
+    }
+
+    public function download(){
+
+        $files = Storage::allFiles('public/images'); // lista todos os arquivos em um pasta
+
+        return Storage::download('public/images/photo.jpg');
     }
 
     // Insere um usuário no banco de dados via hard code
